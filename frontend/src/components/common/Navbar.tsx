@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import {
   Dashboard, Person, Logout, Login, HowToReg,
-  Menu as MenuIcon,
+  Menu as MenuIcon, ContentCut,
 } from '@mui/icons-material';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -40,38 +40,22 @@ export default function Navbar() {
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',
-              gap: 0.5,
+              gap: 0.75,
             }}
           >
-            <Box
+            <ContentCut sx={{ color: GOLD, fontSize: 22, transform: 'rotate(-45deg)' }} />
+            <Typography
+              variant="h6"
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                bgcolor: 'rgba(253, 246, 227, 0.07)',
-                borderRadius: '10px',
-                px: 1,
-                py: 0.5,
-                border: `1px solid ${alpha(GOLD, 0.18)}`,
+                color: GOLD,
+                fontFamily: "'Playfair Display', serif",
+                fontWeight: 700,
+                letterSpacing: 1,
+                lineHeight: 1,
               }}
             >
-              <Box
-                component="img"
-                src="/stiched-logo.png"
-                alt="S"
-                sx={{ height: { xs: 32, md: 36 }, width: 'auto' }}
-              />
-              <Box
-                component="img"
-                src="/stiched.png"
-                alt="Stiched"
-                sx={{
-                  height: { xs: 22, md: 26 },
-                  width: 'auto',
-                  display: { xs: 'none', sm: 'block' },
-                }}
-              />
-            </Box>
+              Stiched
+            </Typography>
           </Box>
 
           {/* Desktop nav */}

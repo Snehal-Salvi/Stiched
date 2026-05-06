@@ -91,8 +91,8 @@ export default function Home() {
         sx={{
           position: 'relative',
           overflow: 'hidden',
-          pt: { xs: 10, md: 16 },
-          pb: { xs: 10, md: 14 },
+          pt: { xs: 5, md: 5 },
+        
           px: 2,
           '&::before': {
             content: '""',
@@ -105,7 +105,6 @@ export default function Home() {
           '&::after': {
             content: '""',
             position: 'absolute',
-            top: '30%',
             left: '-10%',
             width: 500,
             height: 500,
@@ -118,18 +117,12 @@ export default function Home() {
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Grid container alignItems="center" spacing={6}>
             <Grid item xs={12} md={7}>
-              <Typography
-                variant="overline"
-                sx={{
-                  color: GOLD,
-                  letterSpacing: '0.2em',
-                  fontWeight: 600,
-                  display: 'block',
-                  mb: 2,
-                }}
-              >
-                Tailored to Perfection
-              </Typography>
+              <Box
+                component="img"
+                src="/stiched-wordmark.png"
+                alt="Stiched"
+                sx={{ height: { xs: 120, md: 180 }, width: 'auto',  mb:2, display: 'block' }}
+              />
 
               <Typography
                 variant="h2"
@@ -167,8 +160,8 @@ export default function Home() {
                   fontFamily: 'Inter, sans-serif',
                 }}
               >
-                Book blouses, salwar kameez, lehengas, shirts and more from the best tailors
-                in your city — without stepping out.
+                Book blouses, lehengas, shirts and more from the best tailors
+                in your city without stepping out.
               </Typography>
 
               {/* Search bar */}
@@ -242,7 +235,7 @@ export default function Home() {
               </Box>
 
               {/* Stats */}
-              <Stack direction="row" gap={5}>
+              <Stack direction="row" gap={5} mb={2} flexWrap="wrap">
                 {STATS.map(({ label, value }) => (
                   <Box key={label}>
                     <Typography
