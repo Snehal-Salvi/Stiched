@@ -44,8 +44,8 @@ const theme = createTheme({
     h4: { fontFamily: '"Playfair Display", serif', fontWeight: 600 },
     h5: { fontWeight: 600 },
     h6: { fontWeight: 600 },
-    button: { textTransform: 'none', fontWeight: 600, letterSpacing: '0.02em' },
-    overline: { letterSpacing: '0.15em', fontWeight: 600 },
+    button: { textTransform: 'none', fontWeight: 600, letterSpacing: 0 },
+    overline: { letterSpacing: 0, fontWeight: 600 },
   },
   shape: { borderRadius: 12 },
   components: {

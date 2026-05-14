@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { register as registerApi } from '../../api/auth';
+import { useAuth } from '../../context/AuthContext';
 
 interface FormData {
   name: string;
@@ -17,18 +18,20 @@ interface FormData {
 }
 
 export default function Register() {
-  const [role, setRole] = useState<'user' | 'designer'>('user');
+  const [role, setRole] = useState<'customer' | 'tailor'>('customer');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await registerApi({ ...data, role });
-      toast.success('OTP sent to your email!');
-      navigate('/verify-otp', { state: { email: data.email } });
+      const res = await registerApi({ ...data, role });
+      login(res.data.token, res.data.user);
+      toast.success(`Welcome to Stiched, ${res.data.user.name}!`);
+      navigate(res.data.user.role === 'tailor' ? '/tailor/dashboard' : '/tailors');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Registration failed';
       toast.error(msg);
@@ -39,16 +42,28 @@ export default function Register() {
 
   return (
     <Box
-      minHeight="100vh"
+      minHeight={{ xs: 'calc(100vh - 68px)', md: 'calc(100vh - 76px)' }}
       display="flex"
       alignItems="center"
       justifyContent="center"
-      sx={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f0f23 100%)', p: 2 }}
+      sx={{
+        background: 'linear-gradient(180deg, #080808 0%, #101010 100%)',
+        px: 2,
+        py: { xs: 4, md: 7 },
+      }}
     >
-      <Card sx={{ maxWidth: 440, width: '100%', borderRadius: 3 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Box display="flex" alignItems="center" gap={1} mb={3}>
-            <DesignServices color="secondary" fontSize="large" />
+      <Card
+        sx={{
+          maxWidth: 460,
+          width: '100%',
+          borderRadius: 2,
+          bgcolor: '#111111',
+          '&:hover': { transform: 'none' },
+        }}
+      >
+        <CardContent sx={{ p: { xs: 3, sm: 4.5 } }}>
+          <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+            <DesignServices color="secondary" fontSize="medium" />
             <Typography variant="h5" fontWeight={800}>Join Stiched</Typography>
           </Box>
 
@@ -67,8 +82,8 @@ export default function Register() {
             size="small"
             sx={{ mb: 3 }}
           >
-            <ToggleButton value="user">Client</ToggleButton>
-            <ToggleButton value="designer">Designer</ToggleButton>
+            <ToggleButton value="customer">Client</ToggleButton>
+            <ToggleButton value="tailor">Tailor</ToggleButton>
           </ToggleButtonGroup>
 
           <Box component="form" onSubmit={handleSubmit(onSubmit)} display="flex" flexDirection="column" gap={2}>

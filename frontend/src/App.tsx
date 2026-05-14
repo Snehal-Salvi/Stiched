@@ -43,10 +43,10 @@ export default function App() {
 
               {/* Guest-only */}
               <Route element={<GuestRoute />}>
-                <Route element={<Login />} path="/login" />
-                <Route element={<Register />} path="/register" />
-                <Route element={<VerifyOTP />} path="/verify-otp" />
-                <Route element={<ForgotPassword />} path="/forgot-password" />
+                <Route element={<Layout><Login /></Layout>} path="/login" />
+                <Route element={<Layout><Register /></Layout>} path="/register" />
+                <Route element={<Layout><VerifyOTP /></Layout>} path="/verify-otp" />
+                <Route element={<Layout><ForgotPassword /></Layout>} path="/forgot-password" />
               </Route>
 
               {/* Google callback — no layout */}
@@ -66,7 +66,7 @@ export default function App() {
           </Suspense>
 
           <ToastContainer
-            position="bottom-right"
+            position="top-right"
             autoClose={3000}
             hideProgressBar={false}
             newestOnTop

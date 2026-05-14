@@ -49,14 +49,26 @@ export default function ForgotPassword() {
 
   return (
     <Box
-      minHeight="100vh"
+      minHeight={{ xs: 'calc(100vh - 68px)', md: 'calc(100vh - 76px)' }}
       display="flex"
       alignItems="center"
       justifyContent="center"
-      sx={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f0f23 100%)', p: 2 }}
+      sx={{
+        background: 'linear-gradient(180deg, #080808 0%, #101010 100%)',
+        px: 2,
+        py: { xs: 4, md: 7 },
+      }}
     >
-      <Card sx={{ maxWidth: 420, width: '100%', borderRadius: 3 }}>
-        <CardContent sx={{ p: 4 }}>
+      <Card
+        sx={{
+          maxWidth: 440,
+          width: '100%',
+          borderRadius: 2,
+          bgcolor: '#111111',
+          '&:hover': { transform: 'none' },
+        }}
+      >
+        <CardContent sx={{ p: { xs: 3, sm: 4.5 } }}>
           <Box display="flex" alignItems="center" gap={1} mb={2}>
             <LockReset color="secondary" fontSize="large" />
             <Typography variant="h5" fontWeight={700}>Reset Password</Typography>

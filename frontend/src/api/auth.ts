@@ -1,8 +1,8 @@
 import api from './axios';
 import type { AuthResponse, User } from '../types';
 
-export const register = (data: { name: string; email: string; password: string; role: string }) =>
-  api.post<{ message: string }>('/auth/register', data);
+export const register = (data: { name: string; email: string; password: string; role: User['role'] }) =>
+  api.post<AuthResponse>('/auth/register', data);
 
 export const verifyOTP = (data: { email: string; otp: string }) =>
   api.post<AuthResponse>('/auth/verify-otp', data);

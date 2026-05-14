@@ -7,19 +7,21 @@ import { sendOTPEmail } from '../utils/sendEmail.js';
 // POST /api/auth/register
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
+  const normalizedRole = normalizeRole(role);
 
   if (await User.findOne({ email })) {
     res.status(400);
     throw new Error('Email already registered');
   }
 
-  const otp = crypto.randomInt(100000, 999999).toString();
-  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+  if (!normalizedRole) {
+    res.status(400);
+    throw new Error('Invalid account type');
+  }
 
-  const user = await User.create({ name, email, password, role: role || 'customer', otp, otpExpiry });
-  await sendOTPEmail(email, otp);
+  const user = await User.create({ name, email, password, role: normalizedRole, isVerified: true });
 
-  res.status(201).json({ message: 'OTP sent to your email. Please verify your account.' });
+  res.status(201).json({ token: generateToken(user._id, user.role), user: sanitize(user) });
 });
 
 // POST /api/auth/verify-otp
@@ -119,3 +121,11 @@ const sanitize = (user) => ({
   avatar: user.avatar,
   isVerified: user.isVerified,
 });
+
+const normalizeRole = (role) => {
+  if (!role) return 'customer';
+  if (role === 'user') return 'customer';
+  if (role === 'designer') return 'tailor';
+  if (['customer', 'tailor'].includes(role)) return role;
+  return null;
+};

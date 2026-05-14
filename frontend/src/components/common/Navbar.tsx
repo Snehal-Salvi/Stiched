@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import {
   Dashboard, Person, Logout, Login, HowToReg,
-  Menu as MenuIcon, ContentCut,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -17,41 +17,63 @@ const GOLD = '#C9A84C';
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [profileMenuEl, setProfileMenuEl] = useState<null | HTMLElement>(null);
+  const [mobileMenuEl, setMobileMenuEl] = useState<null | HTMLElement>(null);
   const trigger = useScrollTrigger();
 
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
     navigate('/login');
-    setAnchorEl(null);
+    setProfileMenuEl(null);
+    setMobileMenuEl(null);
   };
 
   return (
     <Slide appear={false} direction="down" in={!trigger}>
-      <AppBar position="sticky">
-        <Toolbar sx={{ maxWidth: 1200, mx: 'auto', width: '100%', px: { xs: 2, md: 3 } }}>
+      <AppBar position="sticky" elevation={0}>
+        <Toolbar
+          sx={{
+            maxWidth: '100%',
+            mx: 'auto',
+            width: '100%',
+            minHeight: { xs: 68, md: 76 },
+            px: { xs: 1.5, sm: 2.5, md: 3 },
+            gap: 2,
+          }}
+        >
           {/* Logo */}
           <Box
             component={Link}
             to="/"
             sx={{
-              flexGrow: 1,
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',
-              gap: 0.75,
+              gap: 1.25,
+              minWidth: 0,
+              mr: 'auto',
             }}
           >
-            <ContentCut sx={{ color: GOLD, fontSize: 22, transform: 'rotate(-45deg)' }} />
+            <Box
+              component="img"
+              src="/stiched-logo.png"
+              alt="Stiched"
+              sx={{
+                width: { xs: 34, md: 40 },
+                height: { xs: 34, md: 40 },
+                objectFit: 'contain',
+              }}
+            />
             <Typography
               variant="h6"
               sx={{
                 color: GOLD,
                 fontFamily: "'Playfair Display', serif",
-                fontWeight: 700,
-                letterSpacing: 1,
+                fontWeight: 800,
+                letterSpacing: 0,
                 lineHeight: 1,
+                fontSize: { xs: 22, md: 26 },
               }}
             >
               Stiched
@@ -59,13 +81,15 @@ export default function Navbar() {
           </Box>
 
           {/* Desktop nav */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1.25 }}>
             <Button
               component={Link}
               to="/tailors"
               sx={{
                 color: alpha(GOLD, 0.8),
-                fontWeight: 500,
+                fontWeight: 700,
+                px: 2,
+                py: 1,
                 '&:hover': { color: GOLD, backgroundColor: alpha(GOLD, 0.06) },
               }}
             >
@@ -78,7 +102,7 @@ export default function Navbar() {
                   component={Link}
                   to="/login"
                   variant="outlined"
-                  size="small"
+                  sx={{ minWidth: 92 }}
                 >
                   Log In
                 </Button>
@@ -87,7 +111,7 @@ export default function Navbar() {
                   to="/register"
                   variant="contained"
                   color="primary"
-                  size="small"
+                  sx={{ minWidth: 104 }}
                 >
                   Sign Up
                 </Button>
@@ -100,7 +124,7 @@ export default function Navbar() {
                     to="/tailor/dashboard"
                     startIcon={<Dashboard />}
                     variant="outlined"
-                    size="small"
+                    sx={{ minWidth: 126 }}
                   >
                     Dashboard
                   </Button>
@@ -117,7 +141,7 @@ export default function Navbar() {
                     fontWeight: 600,
                   }}
                 />
-                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
+                <IconButton onClick={(e) => setProfileMenuEl(e.currentTarget)} size="small">
                   <Avatar
                     src={user.avatar}
                     sx={{
@@ -134,9 +158,9 @@ export default function Navbar() {
                   </Avatar>
                 </IconButton>
                 <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={() => setAnchorEl(null)}
+                  anchorEl={profileMenuEl}
+                  open={Boolean(profileMenuEl)}
+                  onClose={() => setProfileMenuEl(null)}
                   transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                   PaperProps={{
@@ -157,17 +181,17 @@ export default function Navbar() {
                   <Divider />
                   {user.role === 'tailor' ? (
                     [
-                      <MenuItem key="dashboard" onClick={() => { navigate('/tailor/dashboard'); setAnchorEl(null); }}>
+                      <MenuItem key="dashboard" onClick={() => { navigate('/tailor/dashboard'); setProfileMenuEl(null); }}>
                         <ListItemIcon><Dashboard fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>
                         Dashboard
                       </MenuItem>,
-                      <MenuItem key="profile" onClick={() => { navigate('/tailor/profile'); setAnchorEl(null); }}>
+                      <MenuItem key="profile" onClick={() => { navigate('/tailor/profile'); setProfileMenuEl(null); }}>
                         <ListItemIcon><Person fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>
                         Shop Profile
                       </MenuItem>,
                     ]
                   ) : (
-                    <MenuItem onClick={() => { navigate('/user/orders'); setAnchorEl(null); }}>
+                    <MenuItem onClick={() => { navigate('/user/orders'); setProfileMenuEl(null); }}>
                       <ListItemIcon><Person fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>
                       My Orders
                     </MenuItem>
@@ -183,35 +207,35 @@ export default function Navbar() {
           </Box>
 
           {/* Mobile */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: GOLD }}>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, ml: 'auto' }}>
+            <IconButton onClick={(e) => setMobileMenuEl(e.currentTarget)} sx={{ color: GOLD }}>
               <MenuIcon />
             </IconButton>
             <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={() => setAnchorEl(null)}
+              anchorEl={mobileMenuEl}
+              open={Boolean(mobileMenuEl)}
+              onClose={() => setMobileMenuEl(null)}
               PaperProps={{ sx: { minWidth: 200, borderRadius: 2, bgcolor: '#1A1A1A', border: `1px solid ${alpha(GOLD, 0.2)}` } }}
             >
-              <MenuItem onClick={() => { navigate('/tailors'); setAnchorEl(null); }}>Find a Tailor</MenuItem>
+              <MenuItem onClick={() => { navigate('/tailors'); setMobileMenuEl(null); }}>Find a Tailor</MenuItem>
               {!user ? (
                 [
-                  <MenuItem key="login" onClick={() => { navigate('/login'); setAnchorEl(null); }}>
+                  <MenuItem key="login" onClick={() => { navigate('/login'); setMobileMenuEl(null); }}>
                     <ListItemIcon><Login fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>Log In
                   </MenuItem>,
-                  <MenuItem key="register" onClick={() => { navigate('/register'); setAnchorEl(null); }}>
+                  <MenuItem key="register" onClick={() => { navigate('/register'); setMobileMenuEl(null); }}>
                     <ListItemIcon><HowToReg fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>Sign Up
                   </MenuItem>,
                 ]
               ) : (
                 [
                   user.role === 'tailor' && (
-                    <MenuItem key="dash" onClick={() => { navigate('/tailor/dashboard'); setAnchorEl(null); }}>
+                    <MenuItem key="dash" onClick={() => { navigate('/tailor/dashboard'); setMobileMenuEl(null); }}>
                       <ListItemIcon><Dashboard fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>Dashboard
                     </MenuItem>
                   ),
                   user.role === 'customer' && (
-                    <MenuItem key="orders" onClick={() => { navigate('/user/orders'); setAnchorEl(null); }}>
+                    <MenuItem key="orders" onClick={() => { navigate('/user/orders'); setMobileMenuEl(null); }}>
                       <ListItemIcon><Person fontSize="small" sx={{ color: GOLD }} /></ListItemIcon>My Orders
                     </MenuItem>
                   ),
