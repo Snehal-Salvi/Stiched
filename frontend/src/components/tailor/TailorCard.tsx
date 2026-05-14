@@ -1,13 +1,24 @@
 import {
   Card, CardContent, Box, Typography, Chip, Rating,
-  Button, Stack, alpha,
+  Button, Stack, IconButton, Tooltip, alpha,
 } from '@mui/material';
-import { LocationOn, CheckCircle, ContentCut } from '@mui/icons-material';
+import { LocationOn, CheckCircle, ContentCut, Instagram, Facebook, WhatsApp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import type { Tailor } from '../../types';
 
 const GOLD = '#C9A84C';
+const SOCIAL_COLORS = {
+  instagram: '#E4405F',
+  whatsapp: '#25D366',
+  facebook: '#1877F2',
+};
+
+const getSocialLinks = (tailor: Tailor) => ({
+  instagram: tailor.socialLinks?.instagram || 'https://instagram.com/stiched.tailors',
+  whatsapp: tailor.socialLinks?.whatsapp || 'https://wa.me/919876543210',
+  facebook: tailor.socialLinks?.facebook || 'https://facebook.com/stichedtailors',
+});
 
 export default function TailorCard({ tailor }: { tailor: Tailor }) {
   const navigate = useNavigate();
@@ -16,6 +27,7 @@ export default function TailorCard({ tailor }: { tailor: Tailor }) {
   const minPrice = tailor.services.length
     ? Math.min(...tailor.services.map((s) => s.price))
     : null;
+  const socialLinks = getSocialLinks(tailor);
 
   return (
     <Card
@@ -91,13 +103,42 @@ export default function TailorCard({ tailor }: { tailor: Tailor }) {
         </Box>
 
         {tailor.location.city && (
-          <Box display="flex" justifyContent="center" alignItems="center" gap={0.3} mb={1.5}>
+          <Box display="flex" justifyContent="center" alignItems="center" gap={0.3} mb={1}>
             <LocationOn sx={{ fontSize: 13, color: alpha(GOLD, 0.5) }} />
             <Typography variant="caption" color="text.secondary">
               {tailor.location.city}{tailor.location.state ? `, ${tailor.location.state}` : ''}
             </Typography>
           </Box>
         )}
+
+        <Stack direction="row" justifyContent="center" gap={0.5} mb={1.5}>
+          {[
+            { label: 'Instagram', href: socialLinks.instagram, icon: <Instagram fontSize="small" />, color: SOCIAL_COLORS.instagram },
+            { label: 'WhatsApp', href: socialLinks.whatsapp, icon: <WhatsApp fontSize="small" />, color: SOCIAL_COLORS.whatsapp },
+            { label: 'Facebook', href: socialLinks.facebook, icon: <Facebook fontSize="small" />, color: SOCIAL_COLORS.facebook },
+          ].map(({ label, href, icon, color }) => (
+            <Tooltip title={label} key={label}>
+              <IconButton
+                size="small"
+                component="a"
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                sx={{
+                  width: 28,
+                  height: 28,
+                  color,
+                  border: `1px solid ${alpha(color, 0.28)}`,
+                  bgcolor: alpha(color, 0.08),
+                  '&:hover': { bgcolor: alpha(color, 0.16), borderColor: alpha(color, 0.52) },
+                }}
+              >
+                {icon}
+              </IconButton>
+            </Tooltip>
+          ))}
+        </Stack>
 
         <Stack direction="row" flexWrap="wrap" gap={0.5} mb={2} justifyContent="center">
           {[...new Set(tailor.services.map((s) => s.category))].slice(0, 2).map((cat) => (
@@ -113,9 +154,14 @@ export default function TailorCard({ tailor }: { tailor: Tailor }) {
 
         <Box display="flex" justifyContent="space-between" alignItems="center">
           {minPrice !== null ? (
-            <Typography variant="body2" fontWeight={700} sx={{ background: `linear-gradient(135deg, #8B6914, ${GOLD})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              From ₹{minPrice}
-            </Typography>
+            <Box>
+              <Typography variant="body2" fontWeight={700} sx={{ background: `linear-gradient(135deg, #8B6914, ${GOLD})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                From ₹{minPrice}
+              </Typography>
+              {tailor.services.some((s) => s.priceMayVary) && (
+                <Typography variant="caption" color="text.secondary">May vary</Typography>
+              )}
+            </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">No services</Typography>
           )}

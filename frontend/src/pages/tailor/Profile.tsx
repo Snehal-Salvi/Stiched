@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import {
   getMyTailorProfile, createTailorProfile,
   updateTailorProfile, addShopPhoto, removeShopPhoto,
+  addWorkSample, removeWorkSample,
 } from '../../api/tailors';
 import type { Tailor } from '../../types';
 import { SERVICE_CATEGORIES } from '../../types';
@@ -20,6 +21,7 @@ interface ServiceField {
   name: string;
   category: string;
   price: number;
+  priceMayVary: boolean;
   turnaroundDays: number;
   description: string;
 }
@@ -32,6 +34,9 @@ interface ProfileForm {
   city: string;
   state: string;
   pincode: string;
+  instagram: string;
+  whatsapp: string;
+  facebook: string;
   services: ServiceField[];
 }
 
@@ -40,19 +45,43 @@ export default function TailorProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [photoLoading, setPhotoLoading] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
   const [photoCaption, setPhotoCaption] = useState('');
+  const [sampleCaption, setSampleCaption] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [selectedSample, setSelectedSample] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState('');
+  const [samplePreview, setSamplePreview] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+  const sampleFileRef = useRef<HTMLInputElement>(null);
   const isNew = !tailor;
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm<ProfileForm>({
     defaultValues: {
       shopName: '', description: '', experience: 0, isAvailable: true,
-      city: '', state: '', pincode: '',
-      services: [{ name: '', category: "Women's Wear", price: 0, turnaroundDays: 7, description: '' }],
+      city: '', state: '', pincode: '', instagram: '', whatsapp: '', facebook: '',
+      services: [{ name: '', category: "Women's Wear", price: 1, priceMayVary: false, turnaroundDays: 7, description: '' }],
     },
   });
 
   const { fields: serviceFields, append, remove } = useFieldArray({ control, name: 'services' });
+
+  const handleSelectPhoto = (file?: File) => {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setSelectedPhoto(file || null);
+    setPhotoPreview(file ? URL.createObjectURL(file) : '');
+  };
+
+  const handleSelectSample = (file?: File) => {
+    if (samplePreview) URL.revokeObjectURL(samplePreview);
+    setSelectedSample(file || null);
+    setSamplePreview(file ? URL.createObjectURL(file) : '');
+  };
+
+  useEffect(() => () => {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    if (samplePreview) URL.revokeObjectURL(samplePreview);
+  }, [photoPreview, samplePreview]);
 
   useEffect(() => {
     getMyTailorProfile()
@@ -66,15 +95,19 @@ export default function TailorProfile() {
           city: data.location.city,
           state: data.location.state,
           pincode: data.location.pincode,
+          instagram: data.socialLinks?.instagram || '',
+          whatsapp: data.socialLinks?.whatsapp || '',
+          facebook: data.socialLinks?.facebook || '',
           services: data.services.length > 0
             ? data.services.map((s) => ({
                 name: s.name,
                 category: s.category,
                 price: s.price,
+                priceMayVary: !!s.priceMayVary,
                 turnaroundDays: s.turnaroundDays,
                 description: s.description,
               }))
-            : [{ name: '', category: "Women's Wear", price: 0, turnaroundDays: 7, description: '' }],
+            : [{ name: '', category: "Women's Wear", price: 1, priceMayVary: false, turnaroundDays: 7, description: '' }],
         });
       })
       .catch(() => { /* new profile */ })
@@ -89,7 +122,12 @@ export default function TailorProfile() {
       experience: Number(data.experience),
       isAvailable: data.isAvailable,
       location: { city: data.city, state: data.state, pincode: data.pincode },
-      services: data.services.map((s) => ({ ...s, price: Number(s.price), turnaroundDays: Number(s.turnaroundDays) })),
+      socialLinks: {
+        instagram: data.instagram,
+        whatsapp: data.whatsapp,
+        facebook: data.facebook,
+      },
+      services: data.services.map((s) => ({ ...s, price: Number(s.price), priceMayVary: !!s.priceMayVary, turnaroundDays: Number(s.turnaroundDays) })),
     };
     try {
       if (isNew) {
@@ -109,7 +147,7 @@ export default function TailorProfile() {
   };
 
   const handleAddPhoto = async () => {
-    const file = fileRef.current?.files?.[0];
+    const file = selectedPhoto || fileRef.current?.files?.[0];
     if (!file) return toast.error('Select an image first');
     setPhotoLoading(true);
     const fd = new FormData();
@@ -120,6 +158,7 @@ export default function TailorProfile() {
       const { data } = await getMyTailorProfile();
       setTailor(data);
       setPhotoCaption('');
+      handleSelectPhoto();
       if (fileRef.current) fileRef.current.value = '';
       toast.success('Photo added!');
     } catch {
@@ -134,6 +173,38 @@ export default function TailorProfile() {
       await removeShopPhoto(photoId);
       setTailor((t) => t ? { ...t, shopPhotos: t.shopPhotos.filter((p) => p._id !== photoId) } : t);
       toast.success('Photo removed');
+    } catch {
+      toast.error('Remove failed');
+    }
+  };
+
+  const handleAddWorkSample = async () => {
+    const file = selectedSample || sampleFileRef.current?.files?.[0];
+    if (!file) return toast.error('Select a work sample image first');
+    setSampleLoading(true);
+    const fd = new FormData();
+    fd.append('image', file);
+    fd.append('caption', sampleCaption);
+    try {
+      await addWorkSample(fd);
+      const { data } = await getMyTailorProfile();
+      setTailor(data);
+      setSampleCaption('');
+      handleSelectSample();
+      if (sampleFileRef.current) sampleFileRef.current.value = '';
+      toast.success('Work sample added!');
+    } catch {
+      toast.error('Upload failed');
+    } finally {
+      setSampleLoading(false);
+    }
+  };
+
+  const handleRemoveWorkSample = async (sampleId: string) => {
+    try {
+      await removeWorkSample(sampleId);
+      setTailor((t) => t ? { ...t, workSamples: t.workSamples.filter((p) => p._id !== sampleId) } : t);
+      toast.success('Work sample removed');
     } catch {
       toast.error('Remove failed');
     }
@@ -219,6 +290,27 @@ export default function TailorProfile() {
             </Grid>
           </Paper>
 
+          <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>Social & Contact Links</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <Controller name="instagram" control={control}
+                  render={({ field }) => <TextField {...field} label="Instagram URL" fullWidth placeholder="https://instagram.com/yourshop" />}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Controller name="whatsapp" control={control}
+                  render={({ field }) => <TextField {...field} label="WhatsApp Link" fullWidth placeholder="https://wa.me/91..." />}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Controller name="facebook" control={control}
+                  render={({ field }) => <TextField {...field} label="Facebook URL" fullWidth placeholder="https://facebook.com/yourshop" />}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
           {/* Services */}
           <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -226,7 +318,7 @@ export default function TailorProfile() {
               <Button
                 size="small"
                 startIcon={<Add />}
-                onClick={() => append({ name: '', category: "Women's Wear", price: 0, turnaroundDays: 7, description: '' })}
+                onClick={() => append({ name: '', category: "Women's Wear", price: 1, priceMayVary: false, turnaroundDays: 7, description: '' })}
                 variant="outlined"
               >
                 Add Service
@@ -261,9 +353,18 @@ export default function TailorProfile() {
                       />
                     </Grid>
                     <Grid item xs={6} sm={3}>
-                      <Controller name={`services.${idx}.price`} control={control}
+                      <Controller name={`services.${idx}.price`} control={control} rules={{ min: { value: 1, message: 'Price must be greater than 0' } }}
                         render={({ field: f }) => (
-                          <TextField {...f} label="Price (₹)" type="number" size="small" fullWidth inputProps={{ min: 0 }} />
+                          <TextField
+                            {...f}
+                            label="Price (₹)"
+                            type="number"
+                            size="small"
+                            fullWidth
+                            inputProps={{ min: 1 }}
+                            error={!!errors.services?.[idx]?.price}
+                            helperText={errors.services?.[idx]?.price?.message}
+                          />
                         )}
                       />
                     </Grid>
@@ -271,6 +372,16 @@ export default function TailorProfile() {
                       <Controller name={`services.${idx}.turnaroundDays`} control={control}
                         render={({ field: f }) => (
                           <TextField {...f} label="Days to Complete" type="number" size="small" fullWidth inputProps={{ min: 1 }} />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Controller name={`services.${idx}.priceMayVary`} control={control}
+                        render={({ field: f }) => (
+                          <FormControlLabel
+                            control={<Switch checked={!!f.value} onChange={f.onChange} color="secondary" />}
+                            label="Price may vary as per customization"
+                          />
                         )}
                       />
                     </Grid>
@@ -311,8 +422,9 @@ export default function TailorProfile() {
           </Button>
         </Grid>
 
-        {/* Shop photos sidebar */}
+        {/* Media sidebar */}
         <Grid item xs={12} md={4}>
+          <Stack spacing={3}>
           <Paper sx={{ p: 3, borderRadius: 3 }}>
             <Typography variant="h6" fontWeight={700} mb={2}>Shop Photos</Typography>
 
@@ -331,7 +443,40 @@ export default function TailorProfile() {
                     accept="image/jpeg,image/png,image/webp"
                     style={{ display: 'none' }}
                     id="photo-upload"
+                    onChange={(e) => handleSelectPhoto(e.target.files?.[0])}
                   />
+                  {selectedPhoto && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 1.25,
+                        alignItems: 'center',
+                        p: 1,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={photoPreview}
+                        alt="Selected shop"
+                        sx={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 1 }}
+                      />
+                      <Box minWidth={0} flex={1}>
+                        <Typography variant="body2" fontWeight={600} noWrap>{selectedPhoto.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {(selectedPhoto.size / 1024 / 1024).toFixed(2)} MB selected
+                        </Typography>
+                      </Box>
+                      <IconButton size="small" color="error" onClick={() => {
+                        handleSelectPhoto();
+                        if (fileRef.current) fileRef.current.value = '';
+                      }}>
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  )}
                   <Box display="flex" gap={1}>
                     <Button
                       variant="outlined"
@@ -339,7 +484,7 @@ export default function TailorProfile() {
                       onClick={() => fileRef.current?.click()}
                       fullWidth
                     >
-                      Select Image
+                      {selectedPhoto ? 'Change Image' : 'Select Image'}
                     </Button>
                     <Button
                       variant="contained"
@@ -376,6 +521,108 @@ export default function TailorProfile() {
               </ImageList>
             )}
           </Paper>
+
+          <Paper sx={{ p: 3, borderRadius: 3 }}>
+            <Typography variant="h6" fontWeight={700} mb={0.5}>Portfolio / Work Samples</Typography>
+            <Typography color="text.secondary" variant="body2" mb={2}>
+              Add finished garment photos that customers will see first on your detail page.
+            </Typography>
+
+            {!isNew && (
+              <>
+                <Stack spacing={1.5} mb={2}>
+                  <TextField
+                    size="small"
+                    label="Caption (optional)"
+                    value={sampleCaption}
+                    onChange={(e) => setSampleCaption(e.target.value)}
+                    fullWidth
+                  />
+                  <input
+                    type="file"
+                    ref={sampleFileRef}
+                    accept="image/jpeg,image/png,image/webp"
+                    style={{ display: 'none' }}
+                    id="sample-upload"
+                    onChange={(e) => handleSelectSample(e.target.files?.[0])}
+                  />
+                  {selectedSample && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 1.25,
+                        alignItems: 'center',
+                        p: 1,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={samplePreview}
+                        alt="Selected work sample"
+                        sx={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 1 }}
+                      />
+                      <Box minWidth={0} flex={1}>
+                        <Typography variant="body2" fontWeight={600} noWrap>{selectedSample.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {(selectedSample.size / 1024 / 1024).toFixed(2)} MB selected
+                        </Typography>
+                      </Box>
+                      <IconButton size="small" color="error" onClick={() => {
+                        handleSelectSample();
+                        if (sampleFileRef.current) sampleFileRef.current.value = '';
+                      }}>
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  )}
+                  <Box display="flex" gap={1}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<CloudUpload />}
+                      onClick={() => sampleFileRef.current?.click()}
+                      fullWidth
+                    >
+                      {selectedSample ? 'Change Image' : 'Select Image'}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={handleAddWorkSample}
+                      disabled={sampleLoading}
+                    >
+                      {sampleLoading ? <CircularProgress size={18} color="inherit" /> : <Add />}
+                    </Button>
+                  </Box>
+                </Stack>
+              </>
+            )}
+
+            {isNew ? (
+              <Alert severity="info">Save your profile first to add portfolio images.</Alert>
+            ) : tailor?.workSamples.length === 0 ? (
+              <Typography color="text.secondary" variant="body2">No work samples yet. Add your best stitching work here.</Typography>
+            ) : (
+              <ImageList cols={2} gap={8}>
+                {tailor?.workSamples.map((photo) => (
+                  <ImageListItem key={photo._id} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    <img src={photo.image} alt={photo.caption} loading="lazy" />
+                    <ImageListItemBar
+                      title={photo.caption || ''}
+                      actionIcon={
+                        <IconButton size="small" sx={{ color: 'white' }} onClick={() => handleRemoveWorkSample(photo._id)}>
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      }
+                    />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            )}
+          </Paper>
+          </Stack>
         </Grid>
       </Grid>
     </Container>

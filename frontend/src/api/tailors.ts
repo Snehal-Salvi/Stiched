@@ -32,3 +32,11 @@ export const addShopPhoto = (formData: FormData) =>
 
 export const removeShopPhoto = (photoId: string) =>
   api.delete(`/tailors/photos/${photoId}`);
+
+export const addWorkSample = (formData: FormData) =>
+  api.post<Tailor['workSamples']>('/tailors/work-samples', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+export const removeWorkSample = (sampleId: string) =>
+  api.delete(`/tailors/work-samples/${sampleId}`);

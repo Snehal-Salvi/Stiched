@@ -24,7 +24,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
-    navigate('/login');
+    navigate('/');
     setProfileMenuEl(null);
     setMobileMenuEl(null);
   };
@@ -82,19 +82,21 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1.25 }}>
-            <Button
-              component={Link}
-              to="/tailors"
-              sx={{
-                color: alpha(GOLD, 0.8),
-                fontWeight: 700,
-                px: 2,
-                py: 1,
-                '&:hover': { color: GOLD, backgroundColor: alpha(GOLD, 0.06) },
-              }}
-            >
-              Find a Tailor
-            </Button>
+            {user?.role !== 'tailor' && (
+              <Button
+                component={Link}
+                to="/tailors"
+                sx={{
+                  color: alpha(GOLD, 0.8),
+                  fontWeight: 700,
+                  px: 2,
+                  py: 1,
+                  '&:hover': { color: GOLD, backgroundColor: alpha(GOLD, 0.06) },
+                }}
+              >
+                Find a Tailor
+              </Button>
+            )}
 
             {!user ? (
               <>
@@ -217,7 +219,9 @@ export default function Navbar() {
               onClose={() => setMobileMenuEl(null)}
               PaperProps={{ sx: { minWidth: 200, borderRadius: 2, bgcolor: '#1A1A1A', border: `1px solid ${alpha(GOLD, 0.2)}` } }}
             >
-              <MenuItem onClick={() => { navigate('/tailors'); setMobileMenuEl(null); }}>Find a Tailor</MenuItem>
+              {user?.role !== 'tailor' && (
+                <MenuItem onClick={() => { navigate('/tailors'); setMobileMenuEl(null); }}>Find a Tailor</MenuItem>
+              )}
               {!user ? (
                 [
                   <MenuItem key="login" onClick={() => { navigate('/login'); setMobileMenuEl(null); }}>

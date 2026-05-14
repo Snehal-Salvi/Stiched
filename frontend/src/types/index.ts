@@ -12,6 +12,7 @@ export interface TailorService {
   name: string;
   category: string;
   price: number;
+  priceMayVary?: boolean;
   turnaroundDays: number;
   description: string;
 }
@@ -28,6 +29,12 @@ export interface TailorLocation {
   pincode: string;
 }
 
+export interface TailorSocialLinks {
+  instagram?: string;
+  whatsapp?: string;
+  facebook?: string;
+}
+
 export interface Tailor {
   _id: string;
   user: User;
@@ -36,6 +43,7 @@ export interface Tailor {
   experience: number;
   services: TailorService[];
   location: TailorLocation;
+  socialLinks?: TailorSocialLinks;
   shopPhotos: ShopPhoto[];
   workSamples: ShopPhoto[];
   rating: number;

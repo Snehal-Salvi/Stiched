@@ -21,6 +21,15 @@ const CITIES = [
   { city: 'Kochi',     state: 'Kerala',      pinBase: '682' },
 ];
 
+const dummySocialLinks = (shopName) => {
+  const slug = shopName.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 24) || 'stichedtailor';
+  return {
+    instagram: `https://instagram.com/${slug}`,
+    whatsapp: 'https://wa.me/1234567890',
+    facebook: `https://facebook.com/${slug}`,
+  };
+};
+
 const FEMALE_NAMES = [
   'Meera','Sunita','Priya','Anjali','Fatima','Lakshmi','Rekha','Sonia',
   'Deepa','Kavitha','Nandita','Pallavi','Shruti','Usha','Vandana','Yamini',
@@ -363,8 +372,12 @@ async function seed() {
       shopName: t.shopName,
       description: t.description,
       experience: t.experience,
-      services: t.services,
+      services: t.services.map((service, index) => ({
+        ...service,
+        priceMayVary: index === 0 ? false : service.price >= 800,
+      })),
       location: { city: t.city, state: t.state, pincode: t.pincode },
+      socialLinks: dummySocialLinks(t.shopName),
       rating: t.rating,
       totalReviews: t.totalReviews,
       isAvailable: true,

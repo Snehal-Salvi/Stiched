@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const serviceSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String, required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, required: true, min: 1 },
+  priceMayVary: { type: Boolean, default: false },
   turnaroundDays: { type: Number, default: 7 },
   description: { type: String, default: '' },
 });
@@ -19,6 +20,11 @@ const tailorSchema = new mongoose.Schema(
       city: { type: String, default: '' },
       state: { type: String, default: '' },
       pincode: { type: String, default: '' },
+    },
+    socialLinks: {
+      instagram: { type: String, default: '' },
+      whatsapp: { type: String, default: '' },
+      facebook: { type: String, default: '' },
     },
     shopPhotos: [
       {

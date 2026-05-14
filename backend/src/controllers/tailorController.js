@@ -59,6 +59,8 @@ export const createProfile = asyncHandler(async (req, res) => {
     throw new Error('Tailor profile already exists');
   }
 
+  validateServices(req.body.services, res);
+
   await User.findByIdAndUpdate(req.user._id, { role: 'tailor' });
 
   const tailor = await Tailor.create({ user: req.user._id, ...req.body });
@@ -73,7 +75,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
     throw new Error('Tailor profile not found');
   }
 
-  const allowed = ['shopName', 'description', 'experience', 'services', 'location', 'isAvailable'];
+  validateServices(req.body.services, res);
+
+  const allowed = ['shopName', 'description', 'experience', 'services', 'location', 'socialLinks', 'isAvailable'];
   allowed.forEach((field) => {
     if (req.body[field] !== undefined) tailor[field] = req.body[field];
   });
@@ -117,3 +121,48 @@ export const removeShopPhoto = asyncHandler(async (req, res) => {
   await tailor.save();
   res.json({ message: 'Photo removed' });
 });
+
+// POST /api/tailors/work-samples
+export const addWorkSample = asyncHandler(async (req, res) => {
+  const tailor = await Tailor.findOne({ user: req.user._id });
+  if (!tailor) {
+    res.status(404);
+    throw new Error('Tailor profile not found');
+  }
+
+  const { caption } = req.body;
+  const image = req.file?.path;
+
+  if (!image) {
+    res.status(400);
+    throw new Error('Image is required');
+  }
+
+  tailor.workSamples.push({ image, caption: caption || '' });
+  await tailor.save();
+  res.status(201).json(tailor.workSamples);
+});
+
+// DELETE /api/tailors/work-samples/:sampleId
+export const removeWorkSample = asyncHandler(async (req, res) => {
+  const tailor = await Tailor.findOne({ user: req.user._id });
+  if (!tailor) {
+    res.status(404);
+    throw new Error('Tailor profile not found');
+  }
+
+  tailor.workSamples = tailor.workSamples.filter(
+    (p) => p._id.toString() !== req.params.sampleId
+  );
+  await tailor.save();
+  res.json({ message: 'Work sample removed' });
+});
+
+const validateServices = (services, res) => {
+  if (!Array.isArray(services)) return;
+  const hasInvalidPrice = services.some((service) => Number(service.price) <= 0);
+  if (hasInvalidPrice) {
+    res.status(400);
+    throw new Error('Service price must be greater than 0');
+  }
+};
