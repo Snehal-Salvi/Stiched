@@ -26,6 +26,12 @@ const tailorSchema = new mongoose.Schema(
         caption: { type: String, default: '' },
       },
     ],
+    workSamples: [
+      {
+        image: String,
+        caption: { type: String, default: '' },
+      },
+    ],
     rating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
     isAvailable: { type: Boolean, default: true },

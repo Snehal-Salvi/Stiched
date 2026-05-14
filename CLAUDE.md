@@ -20,7 +20,7 @@ npm run dev      # development with nodemon
 npm start        # production
 ```
 
-Default port: `5001`. Requires a `.env` file (see required vars below).
+Default port: `5004`. Requires a `.env` file (see required vars below).
 
 ### Required environment variables
 
@@ -98,7 +98,7 @@ Order statuses: `pending` → `accepted` / `rejected`, `accepted` → `in_progre
 
 ## Frontend
 
-React 18 + TypeScript + Vite + Material UI. Dev server runs on port 3000 and proxies `/api/*` to the backend on port 5001.
+React 18 + TypeScript + Vite + Material UI. Dev server runs on port 3000 and proxies `/api/*` to the backend on port 5004.
 
 ### Running the frontend
 

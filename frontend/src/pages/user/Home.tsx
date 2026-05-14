@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Container, Grid, Chip, Avatar,
-  Stack, TextField, InputAdornment, CircularProgress, alpha,
+  Stack, InputAdornment, CircularProgress, alpha,
 } from '@mui/material';
 import { Search, MyLocation, ContentCut, CheckCircle, Star, ArrowForward } from '@mui/icons-material';
+import CityAutocomplete from '../../components/common/CityAutocomplete';
 import { useNavigate } from 'react-router-dom';
 
 const GOLD = '#C9A84C';
@@ -55,24 +56,31 @@ export default function Home() {
   const [city, setCity] = useState('');
   const [detecting, setDetecting] = useState(false);
 
+  const resolveCity = async (coords: GeolocationCoordinates) => {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`
+    );
+    const data = await res.json();
+    return data.address?.city || data.address?.town || data.address?.village || data.address?.county || '';
+  };
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try { setCity(await resolveCity(coords)); } catch { /* silent */ } finally { setDetecting(false); }
+      },
+      () => setDetecting(false)
+    );
+  }, []);
+
   const detectCity = () => {
     if (!navigator.geolocation) return;
     setDetecting(true);
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`
-          );
-          const data = await res.json();
-          setCity(
-            data.address?.city ||
-            data.address?.town ||
-            data.address?.village ||
-            data.address?.county ||
-            ''
-          );
-        } catch { /* silent */ } finally { setDetecting(false); }
+        try { setCity(await resolveCity(coords)); } catch { /* silent */ } finally { setDetecting(false); }
       },
       () => setDetecting(false)
     );
@@ -184,45 +192,30 @@ export default function Home() {
                   transition: 'all 0.2s ease',
                 }}
               >
-                <TextField
-                  placeholder="Enter your city..."
+                <CityAutocomplete
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={setCity}
+                  placeholder="Enter your city..."
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  size="small"
-                  fullWidth
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': { border: 'none' },
-                      bgcolor: 'transparent',
-                    },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: alpha(GOLD, 0.6), fontSize: 20 }} />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Button
-                          size="small"
-                          onClick={detectCity}
-                          disabled={detecting}
-                          startIcon={detecting ? <CircularProgress size={13} sx={{ color: GOLD }} /> : <MyLocation fontSize="small" />}
-                          sx={{
-                            color: GOLD,
-                            fontSize: '0.78rem',
-                            whiteSpace: 'nowrap',
-                            px: 1,
-                            '&:hover': { bgcolor: alpha(GOLD, 0.08) },
-                          }}
-                        >
-                          {detecting ? 'Detecting...' : 'My Location'}
-                        </Button>
-                      </InputAdornment>
-                    ),
-                  }}
+                  sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { border: 'none' }, bgcolor: 'transparent' } }}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <Search sx={{ color: alpha(GOLD, 0.6), fontSize: 20 }} />
+                    </InputAdornment>
+                  }
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <Button
+                        size="small"
+                        onClick={detectCity}
+                        disabled={detecting}
+                        startIcon={detecting ? <CircularProgress size={13} sx={{ color: GOLD }} /> : <MyLocation fontSize="small" />}
+                        sx={{ color: GOLD, fontSize: '0.78rem', whiteSpace: 'nowrap', px: 1, '&:hover': { bgcolor: alpha(GOLD, 0.08) } }}
+                      >
+                        {detecting ? 'Detecting...' : 'My Location'}
+                      </Button>
+                    </InputAdornment>
+                  }
                 />
                 <Button
                   variant="contained"

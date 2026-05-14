@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Container, Grid, Typography, TextField, Box,
+  Container, Grid, Typography, Box,
   Select, MenuItem, FormControl, InputLabel, Pagination,
-  Paper, InputAdornment, Button, Chip, CircularProgress, Alert, alpha,
+  Paper, Button, Chip, CircularProgress, Alert, alpha,
 } from '@mui/material';
-import { Search, FilterList, Clear, MyLocation } from '@mui/icons-material';
+import CityAutocomplete from '../../components/common/CityAutocomplete';
+import { FilterList, Clear, MyLocation } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
 import { getTailors } from '../../api/tailors';
 import type { Tailor } from '../../types';
@@ -22,18 +23,17 @@ export default function Tailors() {
   const [error, setError] = useState('');
   const [detecting, setDetecting] = useState(false);
 
-  const [search, setSearch] = useState(params.get('search') || '');
   const [city, setCity] = useState(params.get('city') || '');
   const [serviceCategory, setServiceCategory] = useState(params.get('serviceCategory') || '');
   const [minRating, setMinRating] = useState(0);
   const [page, setPage] = useState(1);
+  const [locationReady, setLocationReady] = useState(!!params.get('city'));
 
   const fetchTailors = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
       const { data } = await getTailors({
-        search: search || undefined,
         city: city || undefined,
         serviceCategory: serviceCategory || undefined,
         minRating: minRating || undefined,
@@ -48,9 +48,41 @@ export default function Tailors() {
     } finally {
       setLoading(false);
     }
-  }, [search, city, serviceCategory, minRating, page]);
+  }, [city, serviceCategory, minRating, page]);
 
-  useEffect(() => { fetchTailors(); }, [fetchTailors]);
+  const resolveCity = async (coords: GeolocationCoordinates) => {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`
+    );
+    const data = await res.json();
+    return data.address?.city || data.address?.town || data.address?.village || '';
+  };
+
+  // Auto-detect location on first load if no city in URL
+  useEffect(() => {
+    if (params.get('city') || !navigator.geolocation) {
+      setLocationReady(true);
+      return;
+    }
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const detected = await resolveCity(coords);
+          if (detected) setCity(detected);
+        } catch { /* silent */ } finally {
+          setDetecting(false);
+          setLocationReady(true);
+        }
+      },
+      () => { setDetecting(false); setLocationReady(true); }
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!locationReady) return;
+    fetchTailors();
+  }, [fetchTailors, locationReady]);
 
   const detectCity = () => {
     if (!navigator.geolocation) return;
@@ -58,11 +90,7 @@ export default function Tailors() {
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
         try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`
-          );
-          const data = await res.json();
-          const detected = data.address?.city || data.address?.town || data.address?.village || '';
+          const detected = await resolveCity(coords);
           setCity(detected);
           setPage(1);
         } catch { /* silent */ } finally { setDetecting(false); }
@@ -72,11 +100,11 @@ export default function Tailors() {
   };
 
   const clearFilters = () => {
-    setSearch(''); setCity(''); setServiceCategory(''); setMinRating(0); setPage(1);
+    setCity(''); setServiceCategory(''); setMinRating(0); setPage(1);
     setParams({});
   };
 
-  const hasFilters = search || city || serviceCategory || minRating > 0;
+  const hasFilters = city || serviceCategory || minRating > 0;
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -117,20 +145,11 @@ export default function Tailors() {
               )}
             </Box>
 
-            <TextField
-              label="Search"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              fullWidth size="small" sx={{ mb: 2 }}
-              InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" sx={{ color: alpha(GOLD, 0.5) }} /></InputAdornment> }}
-            />
-
-            <Box display="flex" gap={1} mb={2}>
-              <TextField
-                label="City"
+<Box display="flex" gap={1} mb={2}>
+              <CityAutocomplete
                 value={city}
-                onChange={(e) => { setCity(e.target.value); setPage(1); }}
-                size="small" fullWidth
+                label="City"
+                onChange={(val) => { setCity(val); setPage(1); }}
               />
               <Button
                 size="small" variant="outlined" onClick={detectCity} disabled={detecting}

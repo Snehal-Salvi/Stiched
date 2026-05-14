@@ -37,6 +37,7 @@ export interface Tailor {
   services: TailorService[];
   location: TailorLocation;
   shopPhotos: ShopPhoto[];
+  workSamples: ShopPhoto[];
   rating: number;
   totalReviews: number;
   isAvailable: boolean;
