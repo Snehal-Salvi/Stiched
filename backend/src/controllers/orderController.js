@@ -49,6 +49,15 @@ export const getIncomingOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
+const ALLOWED_STATUS_TRANSITIONS = {
+  pending: ['accepted', 'rejected'],
+  accepted: ['in_progress', 'cancelled'],
+  in_progress: ['completed', 'cancelled'],
+  completed: [],
+  cancelled: [],
+  rejected: [],
+};
+
 // PUT /api/orders/:id/status
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status, deliveryDate } = req.body;
@@ -63,6 +72,12 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   if (!isOwner) {
     res.status(403);
     throw new Error('Not authorized');
+  }
+
+  const nextStates = ALLOWED_STATUS_TRANSITIONS[order.status] || [];
+  if (!nextStates.includes(status)) {
+    res.status(400);
+    throw new Error(`Cannot transition order from "${order.status}" to "${status}"`);
   }
 
   order.status = status;

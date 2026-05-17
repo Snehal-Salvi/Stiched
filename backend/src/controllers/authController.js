@@ -4,10 +4,26 @@ import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 import { sendOTPEmail } from '../utils/sendEmail.js';
 
+const asString = (v) => (typeof v === 'string' ? v : '');
+const normalizeEmail = (v) => asString(v).trim().toLowerCase();
+
+const otpsMatch = (a, b) => {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  if (a.length === 0 || a.length !== b.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+};
+
 // POST /api/auth/register
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
-  const normalizedRole = normalizeRole(role);
+  const email = normalizeEmail(req.body.email);
+  const name = asString(req.body.name).trim();
+  const password = asString(req.body.password);
+  const normalizedRole = normalizeRole(req.body.role);
+
+  if (!email || !name || !password) {
+    res.status(400);
+    throw new Error('Name, email, and password are required');
+  }
 
   if (await User.findOne({ email })) {
     res.status(400);
@@ -26,10 +42,23 @@ export const register = asyncHandler(async (req, res) => {
 
 // POST /api/auth/verify-otp
 export const verifyOTP = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
+  const email = normalizeEmail(req.body.email);
+  const otp = asString(req.body.otp);
+
+  if (!email || !otp) {
+    res.status(400);
+    throw new Error('Invalid or expired OTP');
+  }
+
   const user = await User.findOne({ email });
 
-  if (!user || user.otp !== otp || user.otpExpiry < new Date()) {
+  if (
+    !user ||
+    !user.otp ||
+    !user.otpExpiry ||
+    user.otpExpiry < new Date() ||
+    !otpsMatch(user.otp, otp)
+  ) {
     res.status(400);
     throw new Error('Invalid or expired OTP');
   }
@@ -44,7 +73,14 @@ export const verifyOTP = asyncHandler(async (req, res) => {
 
 // POST /api/auth/login
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const email = normalizeEmail(req.body.email);
+  const password = asString(req.body.password);
+
+  if (!email || !password) {
+    res.status(401);
+    throw new Error('Invalid credentials');
+  }
+
   const user = await User.findOne({ email });
 
   if (!user || !user.password) {
@@ -67,7 +103,13 @@ export const login = asyncHandler(async (req, res) => {
 
 // POST /api/auth/forgot-password
 export const forgotPassword = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+  const email = normalizeEmail(req.body.email);
+
+  if (!email) {
+    res.status(400);
+    throw new Error('Email is required');
+  }
+
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -86,10 +128,24 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
 // POST /api/auth/reset-password
 export const resetPassword = asyncHandler(async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  const email = normalizeEmail(req.body.email);
+  const otp = asString(req.body.otp);
+  const newPassword = asString(req.body.newPassword);
+
+  if (!email || !otp || !newPassword) {
+    res.status(400);
+    throw new Error('Invalid or expired OTP');
+  }
+
   const user = await User.findOne({ email });
 
-  if (!user || user.otp !== otp || user.otpExpiry < new Date()) {
+  if (
+    !user ||
+    !user.otp ||
+    !user.otpExpiry ||
+    user.otpExpiry < new Date() ||
+    !otpsMatch(user.otp, otp)
+  ) {
     res.status(400);
     throw new Error('Invalid or expired OTP');
   }

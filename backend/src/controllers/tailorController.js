@@ -51,6 +51,16 @@ export const getTailorById = asyncHandler(async (req, res) => {
   res.json(tailor);
 });
 
+const TAILOR_WRITABLE_FIELDS = ['shopName', 'description', 'experience', 'services', 'location', 'socialLinks', 'isAvailable'];
+
+const pickTailorFields = (body) => {
+  const out = {};
+  TAILOR_WRITABLE_FIELDS.forEach((field) => {
+    if (body[field] !== undefined) out[field] = body[field];
+  });
+  return out;
+};
+
 // POST /api/tailors/profile
 export const createProfile = asyncHandler(async (req, res) => {
   const exists = await Tailor.findOne({ user: req.user._id });
@@ -63,7 +73,7 @@ export const createProfile = asyncHandler(async (req, res) => {
 
   await User.findByIdAndUpdate(req.user._id, { role: 'tailor' });
 
-  const tailor = await Tailor.create({ user: req.user._id, ...req.body });
+  const tailor = await Tailor.create({ ...pickTailorFields(req.body), user: req.user._id });
   res.status(201).json(tailor);
 });
 
@@ -77,9 +87,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
   validateServices(req.body.services, res);
 
-  const allowed = ['shopName', 'description', 'experience', 'services', 'location', 'socialLinks', 'isAvailable'];
-  allowed.forEach((field) => {
-    if (req.body[field] !== undefined) tailor[field] = req.body[field];
+  const updates = pickTailorFields(req.body);
+  Object.entries(updates).forEach(([field, value]) => {
+    tailor[field] = value;
   });
 
   await tailor.save();
