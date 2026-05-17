@@ -208,9 +208,9 @@ export default function TailorProfile() {
                 }}
               />
               <Typography variant="h3" fontWeight={800} sx={{ fontFamily: '"Playfair Display", serif', color: '#F5F0E8', lineHeight: 1.05, fontSize: { xs: '1.55rem', md: '2.1rem' } }}>
-                {tailor.shopName || tailor.user.name}
+                {tailor.shopName || tailor.user?.name || 'Tailor'}
               </Typography>
-              {tailor.shopName && (
+              {tailor.shopName && tailor.user?.name && (
                 <Typography variant="body1" sx={{ color: alpha('#F5F0E8', 0.55), mt: 0.5 }}>
                   by {tailor.user.name}
                 </Typography>
@@ -268,7 +268,7 @@ export default function TailorProfile() {
 
                 <Box sx={{ p: 2, textAlign: 'center' }}>
                   <Box sx={{ position: 'relative', display: 'inline-block', mb: 1.25 }}>
-                    <Avatar src={tailor.user.avatar}
+                    <Avatar src={tailor.user?.avatar}
                       sx={{
                         width: 64, height: 64,
                         bgcolor: alpha(GOLD, 0.15), color: GOLD, fontSize: 26, fontWeight: 700,
@@ -276,7 +276,7 @@ export default function TailorProfile() {
                         boxShadow: `0 0 0 4px #111, 0 0 28px ${alpha(GOLD, 0.2)}`,
                       }}
                     >
-                      {tailor.user.name[0]}
+                      {tailor.user?.name?.[0] || 'T'}
                     </Avatar>
                     {tailor.isAvailable && (
                       <Box sx={{ position: 'absolute', bottom: 4, right: 2, width: 16, height: 16, bgcolor: '#4CAF50', borderRadius: '50%', border: '2px solid #111' }} />
@@ -546,7 +546,7 @@ export default function TailorProfile() {
               </Box>
               <Box
                 component="iframe"
-                title={`${tailor.shopName || tailor.user.name} location`}
+                title={`${tailor.shopName || tailor.user?.name || 'Tailor'} location`}
                 src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
                 loading="lazy"
                 sx={{
@@ -567,7 +567,7 @@ export default function TailorProfile() {
         PaperProps={{ sx: { bgcolor: '#111', border: `1px solid ${alpha(GOLD, 0.2)}`, borderRadius: 3 } }}
       >
         <DialogTitle sx={{ fontWeight: 700, fontFamily: '"Playfair Display", serif', borderBottom: `1px solid ${alpha(GOLD, 0.1)}`, pb: 2 }}>
-          Book {tailor.shopName || tailor.user.name}
+          Book {tailor.shopName || tailor.user?.name || 'Tailor'}
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           <Stepper activeStep={step} sx={{ mb: 3 }}>

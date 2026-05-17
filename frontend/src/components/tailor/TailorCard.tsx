@@ -89,9 +89,9 @@ export default function TailorCard({ tailor }: { tailor: Tailor }) {
 
       <CardContent sx={{ flexGrow: 1, pt: 7, px: 2, pb: 2, textAlign: 'center' }}>
         <Typography variant="subtitle1" fontWeight={700} noWrap sx={{ color: '#F5F0E8', fontFamily: '"Playfair Display", serif' }}>
-          {tailor.shopName || tailor.user.name}
+          {tailor.shopName || tailor.user?.name || 'Tailor'}
         </Typography>
-        {tailor.shopName && (
+        {tailor.shopName && tailor.user?.name && (
           <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
             by {tailor.user.name}
           </Typography>
