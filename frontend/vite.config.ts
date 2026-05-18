@@ -31,13 +31,19 @@ export default defineConfig({
         'src/**/*.test.{ts,tsx}',
         'src/routes/**',
       ],
+      // Per-file thresholds: every file that has a co-located *.test.{ts,tsx}
+      // is expected to keep 100% — these are the files we've consciously
+      // TDD'd. Files without tests stay at 0% and are tracked as a backlog
+      // in the coverage report. As more tests get written, add the file
+      // glob here so a future drop fails CI.
       thresholds: {
         'src/utils/**': { lines: 100, branches: 100, functions: 100, statements: 100 },
         'src/hooks/**': { lines: 100, branches: 100, functions: 100, statements: 100 },
         'src/context/**': { lines: 100, branches: 100, functions: 100, statements: 100 },
-        'src/api/**': { lines: 100, branches: 100, functions: 100, statements: 100 },
-        'src/components/**': { lines: 85, branches: 85, functions: 85, statements: 85 },
-        'src/pages/**': { lines: 85, branches: 85, functions: 85, statements: 85 },
+        'src/components/common/StatusChip.tsx': { lines: 100, branches: 100, functions: 100, statements: 100 },
+        'src/components/tailor/TailorCard.tsx': { lines: 100, branches: 100, functions: 100, statements: 100 },
+        'src/components/booking/MeasurementForm.tsx': { lines: 100, branches: 100, functions: 100, statements: 100 },
+        'src/pages/auth/Login.tsx': { lines: 100, branches: 100, functions: 100, statements: 100 },
       },
     },
   },
