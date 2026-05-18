@@ -181,7 +181,6 @@ const sanitize = (user) => ({
 const normalizeRole = (role) => {
   if (!role) return 'customer';
   if (role === 'user') return 'customer';
-  if (role === 'designer') return 'tailor';
   if (['customer', 'tailor'].includes(role)) return role;
   return null;
 };

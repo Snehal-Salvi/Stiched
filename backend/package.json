@@ -1,7 +1,7 @@
 {
   "name": "stiched-backend",
   "version": "1.0.0",
-  "description": "Stiched - Fashion Designer Marketplace API",
+  "description": "Stiched - Local Tailor Booking API",
   "type": "module",
   "main": "server.js",
   "scripts": {
