@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom/vitest';
-import { afterEach, beforeEach } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { server } from './msw';
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterAll(() => server.close());
 
 const createStorage = () => {
   let store: Record<string, string> = {};
@@ -32,4 +36,5 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  server.resetHandlers();
 });
