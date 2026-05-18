@@ -1,0 +1,15 @@
+process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = 'test-jwt-secret';
+process.env.JWT_EXPIRE = '1h';
+process.env.CLIENT_URL = 'http://localhost:3000';
+process.env.EMAIL_HOST = 'smtp.test';
+process.env.EMAIL_PORT = '587';
+process.env.EMAIL_USER = 'test@test.com';
+process.env.EMAIL_PASS = 'test-pass';
+process.env.EMAIL_FROM = 'noreply@test.com';
+process.env.GOOGLE_CLIENT_ID = 'test-google-id';
+process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
+process.env.GOOGLE_CALLBACK_URL = 'http://localhost:5004/api/auth/google/callback';
+process.env.CLOUDINARY_CLOUD_NAME = 'test-cloud';
+process.env.CLOUDINARY_API_KEY = 'test-key';
+process.env.CLOUDINARY_API_SECRET = 'test-secret';
