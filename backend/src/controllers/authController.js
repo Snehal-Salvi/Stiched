@@ -8,7 +8,6 @@ const asString = (v) => (typeof v === 'string' ? v : '');
 const normalizeEmail = (v) => asString(v).trim().toLowerCase();
 
 const otpsMatch = (a, b) => {
-  if (typeof a !== 'string' || typeof b !== 'string') return false;
   if (a.length === 0 || a.length !== b.length) return false;
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 };
