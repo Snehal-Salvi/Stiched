@@ -74,7 +74,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
     throw new Error('Not authorized');
   }
 
-  const nextStates = ALLOWED_STATUS_TRANSITIONS[order.status] || [];
+  const nextStates = ALLOWED_STATUS_TRANSITIONS[order.status];
   if (!nextStates.includes(status)) {
     res.status(400);
     throw new Error(`Cannot transition order from "${order.status}" to "${status}"`);
