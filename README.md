@@ -4,6 +4,18 @@ A local tailor booking app — customers browse and book nearby tailors for stit
 
 **Live app:** https://stiched.netlify.app
 
+## 📽️ Demo
+
+
+
+https://github.com/user-attachments/assets/19e0ca14-c6db-4587-8cd8-4a415ec94773
+
+
+
+
+
+
+
 ## Tech stack
 
 - **Frontend:** React 18 + TypeScript + Vite + Material UI — hosted on Netlify
