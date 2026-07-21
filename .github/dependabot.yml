@@ -28,6 +28,19 @@ updates:
       - dependencies
       - frontend
     groups:
+      # Group sibling packages that share a major version so
+      # they are always bumped as a unit. Order matters — the
+      # first matching group wins, so keep these before the
+      # generic production-dependencies group.
+      mui:
+        patterns:
+          - "@mui/*"
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
       dev-dependencies:
         dependency-type: development
       production-dependencies:
