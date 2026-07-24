@@ -22,7 +22,7 @@ const CITIES = [
 ];
 
 const dummySocialLinks = (shopName) => {
-  const slug = shopName.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 24) || 'stichedtailor';
+  const slug = shopName.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 24) || 'stitchedtailor';
   return {
     instagram: `https://instagram.com/${slug}`,
     whatsapp: 'https://wa.me/1234567890',
@@ -312,7 +312,7 @@ for (const loc of CITIES) {
       nameIndex++;
 
       const shopName = `${surname} ${pick(SHOP_SUFFIX, nameIndex)}`;
-      const email = `${firstName.toLowerCase()}.${surname.toLowerCase()}${nameIndex}@stiched.io`;
+      const email = `${firstName.toLowerCase()}.${surname.toLowerCase()}${nameIndex}@stitched.io`;
       const serviceSet = CATEGORY_SERVICES[category][i % 4];
 
       tailors.push({
@@ -339,7 +339,7 @@ async function seed() {
   await mongoose.connect(MONGO_URI);
   console.log(`Connected to MongoDB — seeding ${tailors.length} tailors…\n`);
 
-  const hashedPassword = await bcrypt.hash('Stiched@123', 12);
+  const hashedPassword = await bcrypt.hash('Stitched@123', 12);
   let created = 0, skipped = 0;
 
   for (const t of tailors) {

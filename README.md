@@ -1,8 +1,8 @@
-# Stiched
+# Stitched
 
 A local tailor booking app — customers browse and book nearby tailors for stitching blouses, salwar kameez, lehengas, men's shirts, pants, kurtas, alterations, and more. Tailors manage their shop profile, services, pricing, and incoming orders.
 
-**Live app:** https://stiched.netlify.app
+**Live app:** https://stitched-app.netlify.app
 
 ## 📽️ Demo
 

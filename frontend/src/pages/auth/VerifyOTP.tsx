@@ -28,7 +28,7 @@ export default function VerifyOTP() {
     try {
       const res = await verifyOTP({ email: email!, otp });
       login(res.data.token, res.data.user);
-      toast.success('Email verified! Welcome to Stiched.');
+      toast.success('Email verified! Welcome to Stitched.');
       navigate(res.data.user.role === 'tailor' ? '/tailor/dashboard' : '/tailors');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Invalid OTP';

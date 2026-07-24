@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
-app.get('/api/health', (_, res) => res.json({ status: 'Stiched API is running' }));
+app.get('/api/health', (_, res) => res.json({ status: 'Stitched API is running' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tailors', tailorRoutes);

@@ -123,132 +123,20 @@ export default function Home() {
         }}
       >
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Grid container alignItems="center" spacing={6}>
+          <Grid container alignItems="center" spacing={4} sx={{ mb: { xs: 4, md: 6 } }}>
             <Grid item xs={12} md={7}>
               <Box
                 component="img"
-                src="/stiched-wordmark.png"
-                alt="Stiched"
-                sx={{ height: { xs: 120, md: 180 }, width: 'auto',  mb:2, display: 'block' }}
+                src="/stitched-wordmark.png"
+                alt="Stitched — Tailored to Perfection"
+                sx={{
+                  display: 'block',
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: 2,
+                  boxShadow: `0 10px 30px rgba(0,0,0,0.5), 0 0 28px ${alpha(GOLD, 0.06)}`,
+                }}
               />
-
-              <Typography
-                variant="h2"
-                sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 800,
-                  lineHeight: 1.15,
-                  mb: 3,
-                  fontSize: { xs: '2.4rem', md: '3.6rem' },
-                  color: '#F5F0E8',
-                }}
-              >
-                Your Tailor,{' '}
-                <Box
-                  component="span"
-                  sx={{
-                    background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT})`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  Just a Tap
-                </Box>
-                {' '}Away
-              </Typography>
-
-              <Typography
-                variant="h6"
-                sx={{
-                  color: alpha('#F5F0E8', 0.55),
-                  fontWeight: 400,
-                  mb: 5,
-                  maxWidth: 520,
-                  lineHeight: 1.7,
-                  fontFamily: 'Inter, sans-serif',
-                }}
-              >
-                Book blouses, lehengas, shirts and more from the best tailors
-                in your city without stepping out.
-              </Typography>
-
-              {/* Search bar */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 1,
-                  flexWrap: { xs: 'wrap', sm: 'nowrap' },
-                  mb: 6,
-                  maxWidth: 560,
-                  bgcolor: '#131313',
-                  border: `1px solid ${alpha(GOLD, 0.3)}`,
-                  borderRadius: '12px',
-                  p: 0.75,
-                  boxShadow: `0 0 30px ${alpha(GOLD, 0.08)}`,
-                  '&:focus-within': {
-                    border: `1px solid ${alpha(GOLD, 0.6)}`,
-                    boxShadow: `0 0 30px ${alpha(GOLD, 0.15)}`,
-                  },
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <CityAutocomplete
-                  value={city}
-                  onChange={setCity}
-                  placeholder="Enter your city..."
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { border: 'none' }, bgcolor: 'transparent' } }}
-                  startAdornment={
-                    <InputAdornment position="start">
-                      <Search sx={{ color: alpha(GOLD, 0.6), fontSize: 20 }} />
-                    </InputAdornment>
-                  }
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <Button
-                        size="small"
-                        onClick={detectCity}
-                        disabled={detecting}
-                        startIcon={detecting ? <CircularProgress size={13} sx={{ color: GOLD }} /> : <MyLocation fontSize="small" />}
-                        sx={{ color: GOLD, fontSize: '0.78rem', whiteSpace: 'nowrap', px: 1, '&:hover': { bgcolor: alpha(GOLD, 0.08) } }}
-                      >
-                        {detecting ? 'Detecting...' : 'My Location'}
-                      </Button>
-                    </InputAdornment>
-                  }
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSearch}
-                  sx={{ flexShrink: 0, borderRadius: '8px', px: 3, minWidth: 100 }}
-                >
-                  Search
-                </Button>
-              </Box>
-
-              {/* Stats */}
-              <Stack direction="row" gap={5} mb={2} flexWrap="wrap">
-                {STATS.map(({ label, value }) => (
-                  <Box key={label}>
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        background: `linear-gradient(135deg, ${GOLD}, ${GOLD_LIGHT})`,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        fontWeight: 800,
-                        fontFamily: '"Playfair Display", serif',
-                      }}
-                    >
-                      {value}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: alpha('#F5F0E8', 0.45) }}>
-                      {label}
-                    </Typography>
-                  </Box>
-                ))}
-              </Stack>
             </Grid>
 
             {/* Hero visual */}
@@ -341,6 +229,141 @@ export default function Home() {
               </Box>
             </Grid>
           </Grid>
+
+          <Grid container alignItems="flex-start" spacing={6}>
+            <Grid item xs={12} md={7}>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontFamily: '"Playfair Display", serif',
+                  fontWeight: 800,
+                  lineHeight: 1.15,
+                  mb: 3,
+                  fontSize: { xs: '2.4rem', md: '3.6rem' },
+                  color: '#F5F0E8',
+                }}
+              >
+                Your Tailor,{' '}
+                <Box
+                  component="span"
+                  sx={{
+                    background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD}, ${GOLD_LIGHT})`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  Just a Tap
+                </Box>
+                {' '}Away
+              </Typography>
+
+              <Typography
+                variant="h6"
+                sx={{
+                  color: alpha('#F5F0E8', 0.55),
+                  fontWeight: 400,
+                  mb: 5,
+                  maxWidth: 520,
+                  lineHeight: 1.7,
+                  fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                Book blouses, lehengas, shirts and more from the best tailors
+                in your city without stepping out.
+              </Typography>
+
+              {/* Stats */}
+              <Stack direction="row" gap={5} mb={2} flexWrap="wrap">
+                {STATS.map(({ label, value }) => (
+                  <Box key={label}>
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        background: `linear-gradient(135deg, ${GOLD}, ${GOLD_LIGHT})`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        fontWeight: 800,
+                        fontFamily: '"Playfair Display", serif',
+                      }}
+                    >
+                      {value}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: alpha('#F5F0E8', 0.45) }}>
+                      {label}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Grid>
+
+            {/* Search bar */}
+            <Grid item xs={12} md={5}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                  bgcolor: '#131313',
+                  border: `1px solid ${alpha(GOLD, 0.3)}`,
+                  borderRadius: '12px',
+                  p: 1,
+                  boxShadow: `0 0 30px ${alpha(GOLD, 0.08)}`,
+                  '&:focus-within': {
+                    border: `1px solid ${alpha(GOLD, 0.6)}`,
+                    boxShadow: `0 0 30px ${alpha(GOLD, 0.15)}`,
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Typography
+                  sx={{
+                    color: GOLD,
+                    fontWeight: 700,
+                    letterSpacing: 1.2,
+                    textTransform: 'uppercase',
+                    fontSize: '0.72rem',
+                    px: 0.5,
+                    pt: 0.5,
+                  }}
+                >
+                  Search Your City
+                </Typography>
+                <CityAutocomplete
+                  value={city}
+                  onChange={setCity}
+                  placeholder="Enter your city..."
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { border: 'none' }, bgcolor: 'transparent' } }}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <Search sx={{ color: alpha(GOLD, 0.6), fontSize: 20 }} />
+                    </InputAdornment>
+                  }
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <Button
+                        size="small"
+                        onClick={detectCity}
+                        disabled={detecting}
+                        startIcon={detecting ? <CircularProgress size={13} sx={{ color: GOLD }} /> : <MyLocation fontSize="small" />}
+                        sx={{ color: GOLD, fontSize: '0.78rem', whiteSpace: 'nowrap', px: 1, '&:hover': { bgcolor: alpha(GOLD, 0.08) } }}
+                      >
+                        {detecting ? 'Detecting...' : 'My Location'}
+                      </Button>
+                    </InputAdornment>
+                  }
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSearch}
+                  sx={{ borderRadius: '8px', py: 1.2 }}
+                >
+                  Search
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
@@ -417,7 +440,7 @@ export default function Home() {
             mb={8}
             sx={{ fontFamily: '"Playfair Display", serif', color: '#F5F0E8' }}
           >
-            How Stiched Works
+            How Stitched Works
           </Typography>
 
           <Grid container spacing={3}>
@@ -551,7 +574,7 @@ export default function Home() {
               fontFamily: 'Inter, sans-serif',
             }}
           >
-            List your shop on Stiched and start receiving bookings from customers in
+            List your shop on Stitched and start receiving bookings from customers in
             your city — completely free.
           </Typography>
 
@@ -587,7 +610,7 @@ export default function Home() {
         }}
       >
         <Typography variant="caption" sx={{ color: alpha('#F5F0E8', 0.3) }}>
-          © 2025 Stiched · Tailored to Perfection
+          © 2025 Stitched · Tailored to Perfection
         </Typography>
       </Box>
     </Box>

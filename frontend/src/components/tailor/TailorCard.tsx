@@ -15,9 +15,9 @@ const SOCIAL_COLORS = {
 };
 
 const getSocialLinks = (tailor: Tailor) => ({
-  instagram: tailor.socialLinks?.instagram || 'https://instagram.com/stiched.tailors',
+  instagram: tailor.socialLinks?.instagram || 'https://instagram.com/stitched.tailors',
   whatsapp: tailor.socialLinks?.whatsapp || 'https://wa.me/919876543210',
-  facebook: tailor.socialLinks?.facebook || 'https://facebook.com/stichedtailors',
+  facebook: tailor.socialLinks?.facebook || 'https://facebook.com/stitchedtailors',
 });
 
 export default function TailorCard({ tailor }: { tailor: Tailor }) {

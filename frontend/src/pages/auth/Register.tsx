@@ -30,7 +30,7 @@ export default function Register() {
     try {
       const res = await registerApi({ ...data, role });
       login(res.data.token, res.data.user);
-      toast.success(`Welcome to Stiched, ${res.data.user.name}!`);
+      toast.success(`Welcome to Stitched, ${res.data.user.name}!`);
       navigate(res.data.user.role === 'tailor' ? '/tailor/dashboard' : '/tailors');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Registration failed';
@@ -64,7 +64,7 @@ export default function Register() {
         <CardContent sx={{ p: { xs: 3, sm: 4.5 } }}>
           <Box display="flex" alignItems="center" gap={1.5} mb={3}>
             <DesignServices color="secondary" fontSize="medium" />
-            <Typography variant="h5" fontWeight={800}>Join Stiched</Typography>
+            <Typography variant="h5" fontWeight={800}>Join Stitched</Typography>
           </Box>
 
           <Typography variant="body2" color="text.secondary" mb={3}>

@@ -1,7 +1,7 @@
 {
-  "name": "stiched-backend",
+  "name": "stitched-backend",
   "version": "1.0.0",
-  "description": "Stiched - Local Tailor Booking API",
+  "description": "Stitched - Local Tailor Booking API",
   "type": "module",
   "main": "server.js",
   "scripts": {

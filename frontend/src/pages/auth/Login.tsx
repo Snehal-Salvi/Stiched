@@ -64,7 +64,7 @@ export default function Login() {
             <Typography variant="h5" fontWeight={800}>Welcome Back</Typography>
           </Box>
           <Typography variant="body2" color="text.secondary" mb={3}>
-            Sign in to your Stiched account
+            Sign in to your Stitched account
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit(onSubmit)} display="flex" flexDirection="column" gap={2}>

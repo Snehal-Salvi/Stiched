@@ -57,8 +57,8 @@ export default function Navbar() {
           >
             <Box
               component="img"
-              src="/stiched-logo.png"
-              alt="Stiched"
+              src="/stitched-logo.png"
+              alt="Stitched"
               sx={{
                 width: { xs: 34, md: 40 },
                 height: { xs: 34, md: 40 },
@@ -76,7 +76,7 @@ export default function Navbar() {
                 fontSize: { xs: 22, md: 26 },
               }}
             >
-              Stiched
+              Stitched
             </Typography>
           </Box>
 
